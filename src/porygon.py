@@ -28,7 +28,7 @@ def _find_cues_and_mixes(path_base: str) -> tuple[str, str]:
     paths_mixes = []
 
     # Identify all desired files by extensions.
-    with os.scandir(path) as bp:
+    with os.scandir(path_base) as bp:
         for path in bp:
             if path.is_file():
                 if path.name.endswith("cue"):
@@ -49,7 +49,7 @@ def load_mixes(path_base: str) -> dict:
     # TODO: Mix objects.
     mixes = {}
     for path_cue in paths_cues:
-        mix_cue = cue.load_file(path=path_cue)
+        mix_cue = cue.read(path=path_cue)
 
     return {}
 
@@ -68,8 +68,8 @@ if __name__ == "__main__":
                          " companion.")
         )
     parser.add_argument(
-            "--mix-path",
-            default="~/Music/Mixxx/Recordings/",
+            "--path-mixes",
+            default=f"{os.environ['HOME']}/Music/Mixxx/Recordings/",
             type=str,
             help=("Path to directory containing both recorded mixes and their"
                   " respective .cue files.")

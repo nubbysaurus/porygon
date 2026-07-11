@@ -33,7 +33,7 @@ def _convert_first_line(line: str) -> tuple[str]:
     First line format:
         FILE "<NAME>" <FORMAT>
     """
-    contents = line.split("\"")
+    contents = line.strip().split("\"")
     if len(contents) < 3:
         raise IndexError
 
