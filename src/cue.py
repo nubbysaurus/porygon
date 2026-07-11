@@ -14,7 +14,10 @@ Date:
 Version:
     0.0.1
 """
+import logging
 import os
+
+logger = logging.getLogger(name="porygon")
 
 
 def _read_file(path: str) -> tuple:
@@ -26,7 +29,7 @@ def _read_file(path: str) -> tuple:
         lines.append(cfp.readline())
     return lines
 
-def _convert_first_line(line: str) -> tuple[str]:
+def _convert_first_line(line: str) -> [dict, str, str]:
     """
     _convert_first_line(line) -> contents
 
@@ -37,7 +40,23 @@ def _convert_first_line(line: str) -> tuple[str]:
     if len(contents) < 3:
         raise IndexError
 
-    return (contents[1], contents[2].lower())
+    # Extract date and time.
+    try:
+        mix_date_str, mix_time_str = contents[1].split("_")
+    except:
+        raise IndexError
+    # Saving on compute, hurting on prettiness today.
+    mix_date_parts = mix_date_str.split("-")
+    mix_time_raw = mix_time_str.split(".")[0]
+    mix_datetime = {
+            "year": mix_date_parts[0],
+            "month": mix_date_parts[1],
+            "day": mix_date_parts[2]
+        }
+    mix_name = contents[1]
+    mix_filetype = contents[2].lower()
+
+    return (mix_datetime, mix_name, mix_filetype)
 
 def _convert_lines(lines: tuple[str]) -> dict:
     """
@@ -46,10 +65,14 @@ def _convert_lines(lines: tuple[str]) -> dict:
     cue = {}
 
     # The first line of the file has the name and mix filetype. 
-    cue["filename"], cue["filetype"] = _convert_first_line(line=lines[0])
+    try:
+        (cue["datetime"],
+         cue["filename"],
+         cue["filetype"]) = _convert_first_line(line=lines[0])
+    except IndexError:
+        logger.error(f"Cue has invalid first line format: {lines[0]}")
 
-    print(cue)
-    exit()
+    logger.info(cue)
 
 def read(path: str) -> dict:
     """
