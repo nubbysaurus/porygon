@@ -1,0 +1,3 @@
+# porygon - requirements.txt
+argparse
+os
